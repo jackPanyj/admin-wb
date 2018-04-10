@@ -1,0 +1,88 @@
+@import 'var';
+html {
+  box-sizing: border-box;
+  font-family: 'Microsoft yahei';
+  color: #333;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+.gray {
+  background-color: #f7f7f7;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+.el-select .el-input__inner {
+  padding-left: 5px;
+}
+
+input {
+  border: none;
+  outline: none;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 50px;
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+.flex-d {
+  display: flex;
+  flex-direction: column;
+}
+.fg-1 {
+  flex-grow: 1;
+}
+.fb-2 {
+  flex-basis: 50%;
+}
+.fb-3 {
+  flex-basis: 33.33%;
+}
+.fb-4 {
+  flex-basis: 25%;
+}
+.fb-5 {
+  flex-basis: 20%;
+}
+
+.bd {
+  border: 1px solid $color-divider;
+}
+.bdb {
+  border-bottom: 1px solid $color-divider;
+}
+.bdr {
+  border-right: 1px solid $color-divider;
+}
+.bdl {
+  border-left: 1px solid $color-divider;
+}
+.bdt {
+  border-top: 1px solid $color-divider;
+}
+.fz-18 {
+  font-size: 18px;
+}
+.fz-14 {
+  font-size: 14px;
+}
+.fz-12 {
+  font-size: 12px;
+}
+.bold {
+  font-weight: bold;
+}
+
+.mr-20 {
+  margin-right: 20px;
+}
