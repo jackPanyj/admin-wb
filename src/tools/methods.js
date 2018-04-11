@@ -1,5 +1,5 @@
+/* eslint-disable */
 import {ax} from './ax'
-// import { MessageBox } from 'mint-ui'
 
 // 统一处理请求
 function request ({url = '', type = 'get', data = {}}) {
