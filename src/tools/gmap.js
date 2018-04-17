@@ -178,6 +178,7 @@ function geocodeAddress(address, distance, cb) {
         location_circle = new google.maps.Circle({
             center: results[0].geometry.location,
             draggable: false,
+            clickable: false,
             editable: false,
             fillColor: '#09f',
             fillOpacity: .1,
@@ -721,6 +722,7 @@ function centerCurrent(location, distance) {
         center: location,
         draggable: false,
         editable: false,
+        clickable: false,
         fillColor: '#09f',
         fillOpacity: .1,
         radius: distance,
