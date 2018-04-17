@@ -58,6 +58,7 @@ function getIcon() {
     geocoder = new google.maps.Geocoder();
     map.addListener('zoom_changed', zoomChangedListener);
     map.addListener('center_changed', centerChangedListener);
+    MyDefineMenu(map);
   }
 
 
@@ -305,7 +306,7 @@ function deg2rad(deg) {
 
 
 
-    function TxtOverlay(pos, txt, cls, map) {
+function TxtOverlay(pos, txt, cls, map) {
 
   this.pos = pos;
   this.txt_ = txt;
@@ -387,5 +388,290 @@ TxtOverlay.prototype.toggleDOM = function() {
     this.setMap(this.map_);
   }
 }
+
+function hasClass(target, name) {
+  return target.className.match(new RegExp('(\\s|^)' + name + '(\\s|$)'));
+}
+
+function removeClass(target, name) {
+  if (hasClass(target, name)) {
+      target.className = target.className.replace(new RegExp('(\\s|^)' + name + '(\\s|$)'), ' ');
+  }
+}
+
+function addClass(target, name) {
+  if (!hasClass(target, name)) {
+      target.className += " " + name;
+  }
+}
+
+function MenuControl(map) {
+  this.container = document.createElement("div");
+  this.coordinate = null;
+  this.map = map;
+  this.sender = null
+  this.isEnable = true;
+  this.container.className = "menu_casing";
+  this.hide();
+  this.items = new Array();
+  var self = this;
+  google.maps.event.addListener(map, "click", function() {
+      self.hide();
+  });
+  google.maps.event.addListener(map, "movestart", function() {
+      self.hide();
+  });
+  google.maps.event.addListener(map, "zoom_changed", function() {
+      self.hide();
+  });
+  google.maps.event.addListener(map, "dragstart", function() {
+      self.hide();
+  });
+  this.container.index = 1;
+  map.controls[google.maps.ControlPosition.TOP_RIGHT].push(this.container);
+}
+
+MenuControl.prototype.show = function(groupName) {
+  this.container.style.display = "block";
+  if (groupName) {
+      for (var i = 0; i < this.items.length; i++) {
+          if (groupName == this.items[i].groupName) {
+              this.items[i].show();
+          } else {
+              this.items[i].hide();
+          }
+      }
+  }
+}
+
+MenuControl.prototype.hide = function(groupName) {
+  this.container.style.display = "none";
+  if (groupName) {
+      for (var i = 0; i < this.items.length; i++) {
+          if (groupName == this.items[i].groupName) {
+              this.items[i].hide();
+          } else {
+              this.items[i].show();
+          }
+      }
+  }
+}
+
+MenuControl.prototype.enable = function() {
+  this.isEnable = true;
+}
+
+MenuControl.prototype.disable = function() {
+  this.isEnable = false;
+}
+
+MenuControl.prototype.isHide = function() {
+  return (this.container.style.display == "none");
+}
+
+MenuControl.prototype.addItem = function(item) {
+  item.host = this;
+  this.items.push(item);
+  this.container.appendChild(item.casing);
+}
+
+MenuControl.prototype.addSeparator = function(group) {
+  var separator = group || new MenuSeparator();
+  if (typeof group == "string") {
+      separator = new MenuSeparator(group);
+  }
+  this.items.push(separator);
+  this.container.appendChild(separator.casing);
+}
+
+
+function MenuSeparator(groupName) {
+  this.groupName = groupName;
+  this.casing = document.createElement("div");
+  this.casing.className = "menu_separator";
+}
+
+MenuSeparator.prototype.show = function() {
+  this.casing.style.display = "block";
+}
+
+MenuSeparator.prototype.hide = function() {
+  this.casing.style.display = "none";
+}
+
+function MenuItem(options) {
+  options = options || {};
+  this.text = options.text || "";
+  this.icon = options.icon;
+  this.handler = options.handler;
+  this.groupName = options.groupName;
+  this.host = null;
+
+  this.casing = document.createElement("div");
+  this.casing.className = "menu_item";
+
+  var menu_text = document.createElement("div");
+  menu_text.className = "menu_text";
+  var text_lable = document.createElement("span");
+  text_lable.innerHTML = this.text;
+  menu_text.appendChild(text_lable);
+  this.casing.appendChild(menu_text);
+
+  var self = this;
+  if (this.icon) {
+      var item_icon = document.createElement("div");
+      item_icon.className = "menu_icon";
+      item_icon.style.backgroundImage = "url(" + self.icon + ")";
+      self.casing.appendChild(item_icon);
+  }
+
+  if (typeof self.handler == "function") {
+      google.maps.event.addDomListener(self.casing, "click", function() {
+          if (self.host) {
+              self.handler(self.host.coordinate);
+              self.host.hide();
+          }
+      });
+  }
+  google.maps.event.addDomListener(self.casing, "mouseover", function() {
+      addClass(self.casing, "item_active");
+  });
+
+  google.maps.event.addDomListener(self.casing, "mouseout", function() {
+      removeClass(self.casing, "item_active");
+  });
+}
+
+MenuItem.prototype.show = function() {
+  this.casing.style.display = "block";
+}
+
+MenuItem.prototype.hide = function() {
+  this.casing.style.display = "none";
+}
+
+
+// ------
+
+/**
+* 自定义 menu 菜单
+* @return { none }  无
+*/
+
+const MyDefineMenu = (map) => {
+ // 构建右键菜单对象
+ var menu = new MenuControl(map);
+ menu.sender = map;
+
+ // 监听 map 的右键点击事件
+ google.maps.event.addListener(map, "rightclick", (e) => {
+
+     var mapZoom = map.getZoom();
+     if (mapZoom < 11) {
+         menu.isEnable = false;
+     } else {
+         menu.isEnable = true;
+     }
+
+     if (menu.isEnable) {
+         menu.coordinate = {
+             point: e.pixel,
+             latlng: e.latLng
+         };
+         menu.container.style.left = e.pixel.x + "px";
+         menu.container.style.top = e.pixel.y + "px";
+         menu.show("map");
+     }
+ });
+
+ // 添加 marker 标记
+ menu.addItem(new MenuItem({
+     text: "添加标记",
+     icon: "http://okua1wabz.bkt.clouddn.com/marker_1_s.png",
+     groupName: "map",
+     handler: function(coor) {
+
+         // TODO get distance, use lat, lon, distance
+         var lat = coor.latlng.lat();
+         var lon = coor.latlng.lng();
+         var p_distance = window.$map.distance * 1000
+         window.$map.getWithDistance({lat, lon, distance: p_distance})
+        //  centerCurrent(coor.latlng, p_distance)
+
+
+         // 添加标记的右键点击事件，弹出菜单时，IE 以外的浏览器会出现偏移
+         var rightclick = function(e) {
+             // menu.sender = sMarker;
+             if (menu.isEnable) {
+                 var x = e.pixel.x;
+                 var y = e.pixel.y;
+
+                 if (document.all) {
+                     x = window.event.x;
+                     y = window.event.y;
+                 } else {
+                     // 在 IE 以外的浏览器使用鼠标的 x 和 y 坐标弹出菜单时会出现偏移，需要另外计算
+                     var eve = window.event;
+                     if (!eve) {
+                         var c = rightclick;
+                         do {
+                             var arg0 = c.arguments[0];
+                             if (arg0) {
+                                 if (arg0.constructor == MouseEvent) {
+                                     eve = arg0;
+                                     break;
+                                 }
+                             }
+                             c = c.caller;
+                         } while (c.caller)
+                     }
+                     var scale = Math.pow(2, map.getZoom());
+                     var bounds = map.getBounds();
+                     var nw = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
+                     var point = map.getProjection().fromLatLngToPoint(nw);
+                     var worldCoor = map.getProjection().fromLatLngToPoint(coor.latlng);
+                     var off = new google.maps.Point(Math.floor((worldCoor.x - point.x) * scale), Math.floor((worldCoor.y - point.y) * scale));
+                     var markerImg = eve.target.parentNode.parentNode.childNodes[0];
+                     x = (off.x - (markerImg.offsetWidth) / 2) + eve.layerX;
+                     y = (off.y - markerImg.offsetHeight) + eve.layerY;
+                 }
+
+                 menu.coordinate = {
+                     point: new google.maps.Point(x, y),
+                     latlng: coor.latlng
+                 };
+                 menu.container.style.left = x + "px";
+                 menu.container.style.top = y + "px";
+                //  <!--menu.show("sMarker");-->
+             }
+         }
+     }
+ }));
+}
+
+function centerCurrent(location, distance) {
+    map.setCenter(location);
+    centerChangedDoNothing = true;
+    zoomChangedDoNothing = true;
+    cleanLocateInfo();
+    location_marker = new google.maps.Marker({
+      map: map,
+      position: location,
+      icon: getIcon()
+    });
+    location_circle = new google.maps.Circle({
+        center: location,
+        draggable: false,
+        editable: false,
+        fillColor: '#09f',
+        fillOpacity: .1,
+        radius: distance,
+        strokeColor: '#09f',
+        strokeWeight: 1,
+        strokeOpacity: 1,
+        map: map
+    });
+  }
+
 
 export {initMap, geocodeAddress, clickZone, addMarkers}

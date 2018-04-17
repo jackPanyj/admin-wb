@@ -3,3 +3,71 @@
   position: absolute;
   width: 50px
 }
+.menu_casing {
+  // background: url(icon/zc.gif) repeat-y scroll 0 0 #F0F0F0;
+  background: #fff;
+  border: 1px solid #CCCCCC;
+  margin: 0;
+  overflow: hidden;
+  padding: 2px;
+  width: 120px;
+}
+
+.menu_casing .menu_item {
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  height: 22px;
+  line-height: 22px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.menu_casing .menu_item .menu_text {
+  left: 28px;
+  position: absolute;
+  top: 0;
+}
+
+.menu_casing .menu_item.item_active {
+  background: #FAFAFA;
+  border: 1px solid #7EABCD;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 3px 3px 3px 3px;
+}
+
+.menu_casing .menu_separator {
+  // background: url(icon/zc.gif) repeat-x;
+  background: #ff0000;
+  height: 2px;
+  font-size: 2px;
+  line-height: 2px;
+  margin: 3px 0 3px 24px
+}
+
+.menu_casing .menu_icon {
+  height: 16px;
+  left: 2px;
+  position: absolute;
+  top: 3px;
+  width: 16px;
+  background-repeat: no-repeat;
+}
+
+.menu_casing .menu_item:nth-child(1) .menu_icon {
+  background-size: 86% 100%;
+  background-position-x: 1px;
+}
+
+.menu_casing .menu_item:nth-child(2) .menu_icon {
+  background-size: 92% 100%;
+}
+
+.menu_casing .menu_item:nth-child(4) .menu_icon,
+.menu_casing .menu_item:nth-child(5) .menu_icon {
+  background-size: 80% 86%;
+  background-position-x: 2px;
+}
