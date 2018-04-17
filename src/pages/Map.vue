@@ -47,10 +47,12 @@
               </el-select>
             </div>
           </div>
-          <div tag='div' @click="goDetail(roof.id)" style="height: 50px;" class="fz-14 center bdb item" v-for='roof in roofs' :key='roof.id'>
-            <div class="fb-3" >{{roof.id}}</div>
-            <div class="fb-3">{{roof.owner}}</div>
-            <div class="fb-3">{{roof.area}}</div>
+          <div @mouseout="mouseOut()">
+            <div tag='div' @mouseover="mouseIn(roof.id)"  @click="goDetail(roof.id)" style="height: 50px;" class="fz-14 center bdb item" :class="{'hl': highlightRoofId === roof.id}" v-for='roof in roofs' :key='roof.id'>
+              <div class="fb-3" >{{roof.id}}</div>
+              <div class="fb-3">{{roof.owner}}</div>
+              <div class="fb-3">{{roof.area}}</div>
+            </div>
           </div>
           <div id="loading-tag" style="text-align: center;" v-show='offset >= 50 && loading === true'>
             <i class="el-icon-loading"></i>
@@ -63,7 +65,7 @@
 <script>
 /* eslint-disable */
 import debounce from 'lodash.debounce';
-import {initMap, geocodeAddress, clickZone, addMarkers} from '@/tools/gmap'
+import {initMap, geocodeAddress, clickZone, addMarkers, highlightRoof, highlightNothing} from '@/tools/gmap'
 import {isElInView} from '@/tools'
 export default {
   data () {
@@ -81,7 +83,8 @@ export default {
       selectedOptions: [],
       roofs: [],
       loading: true,
-      offset: 0
+      offset: 0,
+      highlightRoofId: null
     }
   },
   methods: {
@@ -175,6 +178,14 @@ export default {
         addMarkers(res.data.roofs, this.offset, this.choices_val)
         this.offset = this.roofs.length
       })
+    },
+    mouseIn (id) {
+      this.highlightRoofId = id;
+      highlightRoof(id)
+    },
+    mouseOut () {
+      this.highlightRoofId = null;
+      highlightNothing()
     }
   },
   mounted () {

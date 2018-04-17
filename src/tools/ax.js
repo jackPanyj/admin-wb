@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disabled */
 import axios from 'axios'
 import Qs from 'qs'
 import router from '@/router'
@@ -30,4 +30,4 @@ ax.interceptors.response.use(
   }
 )
 
-export {ax, storage}
+export {ax}

@@ -11,6 +11,8 @@ var current_txts = [];
 var location_circle = null;
 var location_marker = null;
 var current_markers = [];
+var roofIdToIndex = [];
+var lastRoofId = 0;
 var map = null;
 var geocoder = null;
 
@@ -23,6 +25,18 @@ function getIcon() {
   };
   return image;
 }
+
+
+function getHighlightIcon() {
+  var image = {
+      url: 'http://okua1wabz.bkt.clouddn.com/red_icon.png',
+      scaledSize: new google.maps.Size(20, 20),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(0, 10)
+  };
+  return image;
+}
+
 
   function initMap(map_id, zoneData) {
     if (zoneData) {
@@ -73,15 +87,57 @@ function getIcon() {
             title: marker.owner,
             position: new google.maps.LatLng(marker.lat, marker.lon),
             icon: getIcon(),
+            roofId: marker.id,
             url: window.location.origin + '/fe/act_detail/'+ marker.id
         });
         // 以下表示点击调整到第三页
         google.maps.event.addListener(_marker, 'click', function() {
           window.open(this.url);
         });
+        _marker.addListener('mouseover', markMouseOver);
+        _marker.addListener('mouseout', markMouseOut);
+
         current_markers.push(_marker);
+        roofIdToIndex[marker.id] = current_markers.length - 1;
+
+
     });
 }
+
+      function markMouseOver() {
+        if (lastRoofId > 0) {
+            current_markers[roofIdToIndex[lastRoofId]].setIcon(getIcon());
+        }
+        lastRoofId = this.roofId;
+        // TODO
+        window.$map.highlightRoofId = lastRoofId;
+        current_markers[roofIdToIndex[lastRoofId]].setIcon(getHighlightIcon());
+      }
+
+      function markMouseOut() {
+        if (lastRoofId > 0) {
+            // TODO
+            window.$map.highlightRoofId = null;
+            current_markers[roofIdToIndex[lastRoofId]].setIcon(getIcon());
+            lastRoofId = 0;
+        }
+      }
+
+      function highlightRoof(roofId) {
+        if (lastRoofId > 0) {
+            current_markers[roofIdToIndex[lastRoofId]].setIcon(getIcon());
+        }
+        lastRoofId = roofId;
+        current_markers[roofIdToIndex[lastRoofId]].setIcon(getHighlightIcon());
+      }
+
+      function highlightNothing() {
+        if (lastRoofId > 0) {
+            current_markers[roofIdToIndex[lastRoofId]].setIcon(getIcon());
+            lastRoofId = 0;
+        }
+      }
+
 
   function clickZone(zone_id) {
     var level = zoneMap[zone_id].level;
@@ -284,6 +340,8 @@ function cleanMarkers(){
       marker.setMap(null);
     });
     current_markers = [];
+    roofIdToIndex = [];
+    lastRoofId = 0;
 }
 
 function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
@@ -596,7 +654,7 @@ const MyDefineMenu = (map) => {
          var lon = coor.latlng.lng();
          var p_distance = window.$map.distance * 1000
          window.$map.getWithDistance({lat, lon, distance: p_distance})
-        //  centerCurrent(coor.latlng, p_distance)
+         centerCurrent(coor.latlng, p_distance)
 
 
          // 添加标记的右键点击事件，弹出菜单时，IE 以外的浏览器会出现偏移
@@ -674,4 +732,4 @@ function centerCurrent(location, distance) {
   }
 
 
-export {initMap, geocodeAddress, clickZone, addMarkers}
+export {initMap, geocodeAddress, clickZone, addMarkers, highlightRoof, highlightNothing}
