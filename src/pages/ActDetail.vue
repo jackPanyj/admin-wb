@@ -291,11 +291,11 @@ export default {
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 20,
+          zoom: 19,
           center: {lat: res.data.lat, lng: res.data.lon},
           mapTypeId: 'satellite',
             zoomControl: true,
-            draggable: false,
+            draggable: true,
             mapTypeControl: false,
             scaleControl: false,
             streetViewControl: false,

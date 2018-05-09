@@ -155,6 +155,8 @@ function getHighlightIcon() {
     }
     else {
       map.setZoom(13);
+      centerChangedDoNothing = true
+      zoomChangedDoNothing = true
       window.$map.handleChange(['gmap', zone_id])
       //  TODO display roof by zone_id
     }
