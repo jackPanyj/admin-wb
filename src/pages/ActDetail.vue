@@ -358,7 +358,6 @@ export default {
     }
   }
 }
-
 .row {
   height: 50px;
 }
@@ -368,7 +367,7 @@ export default {
 }
 .content {
   width: 1080px;
-  margin: 70px auto;
+  margin: auto;
   min-height: 600px;
 }
 .logout {
