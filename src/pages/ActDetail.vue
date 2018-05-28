@@ -17,7 +17,7 @@ div.act-detail.fg-1.bd.flex-d
           span.fz-18 {{res.net_cashflow_l && res.net_cashflow_l.toFixed(3)}}%
 
   div.content.bd.swiper-container
-    div.swiper-wrapper(style="height: 600px;")
+    div.swiper-wrapper(style="height: auto;")
       div.swiper-slide.flex
         div.swiper-no-swiping#map.fb-4(style="width: 200px; height: 355px;")
         div.section-1.fg-1.bdl
@@ -336,6 +336,7 @@ export default {
 .header {
   display: flex;
   min-width: 1000px;
+  flex-shrink: 0;
   .left {
     width: 100px;
     height: 100px;
@@ -368,7 +369,6 @@ export default {
 .content {
   width: 1080px;
   margin: auto;
-  min-height: 600px;
 }
 .logout {
   margin-left: auto;
@@ -380,5 +380,12 @@ export default {
 }
 .swiper-pagination-bullet {
   margin-left: 10px;
+}
+@media (max-height: 700px) {
+  .swiper-slide {
+    transform: scale(0.8);
+    transform-origin: 0 0;
+    width: 125%;
+  }
 }
 </style>

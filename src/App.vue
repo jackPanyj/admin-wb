@@ -13,7 +13,7 @@ export default {
 @import './sass/base';
 #app {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   min-width: 100vw;
   flex-direction: column;
 }
